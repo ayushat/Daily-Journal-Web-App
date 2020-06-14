@@ -21,7 +21,7 @@ const posts = [];
 app.get("/",(req,res) => {
   res.render("home",{
     para1 : homeStartingContent,
-    posts :posts,
+    // posts :posts,
   });
   // console.log(posts);
 
@@ -56,9 +56,19 @@ app.get("/post/:postname",(req,res) => {
         postHeading : post.Title,
         postBody: post.Content
       });
-    }
-  })
-})
+    };
+  });
+});
+app.get("/myposts",(req,res) => {
+  res.render("myposts",{
+    posts :posts,
+  });
+
+});
+// app.post("/myposts",(req,res) => {
+
+
+// })
 
 app.post("/compose",(req,res) => {
 
@@ -67,20 +77,9 @@ app.post("/compose",(req,res) => {
     Content : req.body.postBody,
   };
   posts.push(post);
-  res.redirect("/");
+  res.redirect("/myposts");
 
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 
