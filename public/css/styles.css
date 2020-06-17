@@ -40,17 +40,26 @@ html,body{
 /* #posttitle{
     width: 70%;
 } */
+
+.brandlogo{
+    width: 80px;
+    height: 80px;
+
+}
+.brandlogo:hover{
+    box-shadow: 2px 4px 4px 2px grey;
+}
 .homepic{
     width: 200px;
     height: 200px;
     margin: 30px;
     border-radius: 100%;
     padding: 0px;   
-    box-shadow: 4px 4px 8px 4px #a8d8ea ;
     transition: transform .5s ease;
 }
 .homepic:hover{
     transform: scale(1.1,1.1);
+    box-shadow: 4px 4px 8px 4px #a8d8ea ;
 }
 .homegallery{
     display: flex;
@@ -59,12 +68,13 @@ html,body{
 }
 .heading{
     color: darkslategrey !important;
-    text-shadow: 2px 4px 2px lightskyblue;
+   
     transition: transform 0.75s ease;
     font-weight: bold;
 }
 .heading:hover{
     transform: scale(1.1,1.1);
+    text-shadow: 2px 4px 2px lightskyblue;
 }
 h1{
     color: rgb(2, 48, 66);

@@ -4,8 +4,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const loadash = require('lodash');
+const mongoose = require("mongoose");
 
-const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
+const homeStartingContent = "Blogging has become an interesting phenomenon, a natural outgrowth of the world wide web. It’s popular because it is easy. And with all the various platforms today, it’s accessible to nearly anyone.I remember when people were criticizing email because it was “destroying language” and wrecking good grammar, good English etc. Then texting came along and academics began to gasp.Has texting destroyed the language? Everything has a pro and con, including email, texting and blogging. I think it’s great that people are communicating. How many letters would people send in a day if they had to type, print, fold, and insert into an envelope that they must still address and stamp? What a hassle. By email, I can maintain contacts with fifty or more people a day. At the office it used to be a hundred or more."
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
 const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
 
@@ -16,7 +17,15 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-const posts = [];
+mongoose.connect("mongodb://localhost:27017/blogDB", {useNewUrlParser: true});
+
+const postSchema = mongoose.Schema({
+  title: String,
+  content: String
+});
+const Post = mongoose.model("Post", postSchema);
+
+
 
 app.get("/",(req,res) => {
   res.render("home",{
@@ -60,8 +69,11 @@ app.get("/post/:postname",(req,res) => {
   });
 });
 app.get("/myposts",(req,res) => {
-  res.render("myposts",{
-    posts :posts,
+
+  Post.find({}, function(err, posts){
+    res.render("myposts", {
+      posts: posts
+      });
   });
 
 });
@@ -72,13 +84,36 @@ app.get("/myposts",(req,res) => {
 
 app.post("/compose",(req,res) => {
 
-  var post = {
-    Title : req.body.postTitle,
-    Content : req.body.postBody,
-  };
-  posts.push(post);
-  res.redirect("/myposts");
+  const post = new Post ({
 
+    title: loadash.capitalize(req.body.postTitle),
+ 
+    content: loadash.capitalize(req.body.postBody)
+ 
+  });
+  // posts.push(post);
+  post.save(function(err){
+
+    if (!err){
+ 
+      res.redirect("/myposts");
+ 
+    }
+  });
+});
+app.post("/delete",(req,res) => {
+  const postId = req.body.deletebtn;
+  Post.findByIdAndRemove(postId,(err)=> {
+      if(err){
+        console.log(err);
+        console.log(postId);
+      }else{
+        // console.log(postId);
+        res.redirect("/myposts");
+        console.log("Post Successfully Deleted");
+
+      };
+  });
 });
 
 
